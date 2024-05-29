@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% load django_bootstrap5 %}
+
+{% block content %}
+
+    <a href="{% url "accounts:login" %}">ログイン</a>
+    <a href="{% url "accounts:sign_up" %}">新規登録</a>
+
+{% endblock %}

@@ -1,30 +1,28 @@
-from django import forms
-from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import Users
+from django import forms
 
 
-class SignInForm(forms.ModelForm):
-    username = forms.CharField(label="名前")
-    email = forms.EmailField(label="メールアドレス")
-    password = forms.CharField(label="パスワード", widget=forms.PasswordInput)
-    confirm_password = forms.CharField(
-        label="パスワード再入力", widget=forms.PasswordInput
-    )
+class SignUpForm(UserCreationForm):
 
     class Meta:
         model = Users
-        fields = ("username", "email", "password")
+        fields = ["email"]
+        labels = {"email": "メールアドレス"}
 
-    def clean(self):
-        cleaned_data = super().clean()
-        password = cleaned_data.get("password")
-        confirm_password = cleaned_data.get("confirm_password")
-        if password != confirm_password:
-            raise forms.ValidationError("パスワードが一致しません。")
+    def __init__(self, *args, **kwargs):
+        super(SignUpForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs["placeholder"] = ""
 
-    def save(self):
-        user = super().save(commit=False)
-        validate_password(self.cleaned_data.get("password"), user)
-        user.set_password(self.cleaned_data.get("password"))
-        user.save()
-        return user
+
+class LoginForm(AuthenticationForm):
+    # username = forms.CharField(label="メールアドレス")
+
+    class Meta:
+        model = Users
+
+    def __init__(self, *args, **kwargs):
+        super(LoginForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs["placeholder"] = ""

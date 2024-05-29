@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% load django_bootstrap5 %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row row-gap-3">
+
+            <div class="row row-gap-2">
+                <div class="col-md-12">
+                    検索履歴から選ぶ
+                </div>
+                <div class="col-md-2">
+                    <form>
+                        <a href=""></a>
+
+                        <button type="submit" class="btn btn-danger rounded-circle p-0" style="width: 12px;height: 12px;font-size: 7px">✕</button>
+                    </form>
+                </div>
+                <p class="m-auto">検索履歴がありません</p>
+            </div>
+
+            <div class="row row-gap-2">
+                <div class="col-md-12">
+                    画像からキーワードを選ぶ
+                </div>
+                <input type="file" accept="image/*" id="image" style="width: fit-content">
+            </div>
+
+            <div class="row justify-content-evenly">
+                <div class="col-md-6">
+                    <img src="" class="img-thumbnail border-0" width="80%" height="auto">
+                </div>
+                <div class="col-md-4">
+                    <ul class="list-group"></ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
