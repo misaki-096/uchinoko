@@ -10,15 +10,16 @@ from django.urls import reverse_lazy
 from .forms import SignUpForm, LoginForm
 
 
-def my_view(request):
-    if request.user.is_authenticated:
-        return redirect("app:home")
-    else:
-        return redirect("accounts:index")
-
-
 class IndexView(TemplateView):
     template_name = "accounts/index.html"
+
+    def get_template_names(self):
+        if self.request.user.is_authenticated:
+            template_name = "app/home.html"
+        else:
+            template_name = self.template_name
+
+        return [template_name]
 
 
 class SignupView(CreateView):
@@ -41,4 +42,4 @@ class LoginView(LoginView):
 
 
 class LogoutView(LoginRequiredMixin, LogoutView):
-    template_name = "accounts/index.html"
+    template_name = "accounts/login.html"

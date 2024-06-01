@@ -6,9 +6,9 @@ from django.contrib.auth.models import (
 )
 
 
-class Users(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(max_length=50)
-    email = models.EmailField(max_length=100, unique=True)
+class User(AbstractBaseUser, PermissionsMixin):
+    username = models.CharField(max_length=254)
+    email = models.EmailField(unique=True, verbose_name="メールアドレス")
     is_staff = models.BooleanField(default=False)
     groups = None
 
@@ -19,3 +19,6 @@ class Users(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         db_table = "users"
+
+    def __str__(self):
+        return self.email

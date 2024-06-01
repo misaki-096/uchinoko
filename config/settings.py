@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_bootstrap5",
-    "app",
     "accounts",
+    "app",
 ]
 
 MIDDLEWARE = [
@@ -123,8 +123,8 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-AUTH_USER_MODEL = "accounts.Users"
+AUTH_USER_MODEL = "accounts.User"
 
 LOGIN_URL = "accounts:index"
 LOGIN_REDIRECT_URL = "app:home"
-LOGOUT_REDIRECT_URL = "accounts:index"
+LOGOUT_REDIRECT_URL = "accounts:login"

@@ -6,5 +6,5 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 # def index(request):
 #   return HttpResponse("<h1>Hello World</h1>")
-class IndexView(LoginRequiredMixin, TemplateView):
+class HomeView(LoginRequiredMixin, TemplateView):
     template_name = "app/home.html"

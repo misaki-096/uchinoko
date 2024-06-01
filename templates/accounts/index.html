@@ -4,7 +4,11 @@
 
 {% block content %}
 
-    <a href="{% url "accounts:login" %}">ログイン</a>
-    <a href="{% url "accounts:sign_up" %}">新規登録</a>
+    <div class="card text-center m-auto w-50">
+        <div class="card-body">
+            <a href="{% url "accounts:login" %}" class="card-link">ログイン</a>
+            <a href="{% url "accounts:sign_up" %}" class="card-link">新規登録</a>
+        </div>
+    </div>
 
 {% endblock %}

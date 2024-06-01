@@ -1,14 +1,12 @@
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import Users
-from django import forms
+from .models import User
 
 
 class SignUpForm(UserCreationForm):
 
     class Meta:
-        model = Users
+        model = User
         fields = ["email"]
-        labels = {"email": "メールアドレス"}
 
     def __init__(self, *args, **kwargs):
         super(SignUpForm, self).__init__(*args, **kwargs)
@@ -17,10 +15,9 @@ class SignUpForm(UserCreationForm):
 
 
 class LoginForm(AuthenticationForm):
-    # username = forms.CharField(label="メールアドレス")
 
     class Meta:
-        model = Users
+        model = User
 
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
