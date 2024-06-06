@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% load django_bootstrap5 %}
+{% load static %}
 
 {% block content %}
 
@@ -25,15 +26,32 @@
                 <div class="col-md-12">
                     画像からキーワードを選ぶ
                 </div>
-                <input type="file" accept="image/*" id="image" style="width: fit-content">
+                <form action="{% url "app:image" %}" method="GET">
+                    <input type="file" accept="image/*" id="image" style="width: fit-content">
+                    <input type="hidden" name="token" value="{{ token }}">
+                    <button type="submit" id="test1">ファイルを選択</button>
+                </form>
             </div>
 
             <div class="row justify-content-evenly">
                 <div class="col-md-6">
-                    <img src="" class="img-thumbnail border-0" width="80%" height="auto">
+                    <img src="{{ file_name }}" class="img-thumbnail border-0" width="80%" height="auto">
+                    <script>
+                        let data = "{{file_name}}";
+                    </script>
                 </div>
                 <div class="col-md-4">
-                    <ul class="list-group"></ul>
+                    <ul class="list-group">
+                        {% if names != "no" %}
+                            {% for name in names %}
+                                <a href="{% url "app:images_list" %}" class="list-group-item list-group-item-action list-group-item-warning">{{ name }}</a>
+                            {% endfor %}
+                        {% else %}
+                            <script>
+                                alert("画像に写っている対象が検出できませんでした。画像の変更をお願いします。")
+                            </script>
+                        {% endif %}
+                    </ul>
                 </div>
             </div>
 
