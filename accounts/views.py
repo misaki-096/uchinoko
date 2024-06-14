@@ -1,10 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.views.generic import TemplateView, CreateView
-from django.contrib.auth.views import (
-    LoginView,
-    LogoutView,
-)
+from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from .forms import SignUpForm, LoginForm
@@ -13,13 +10,11 @@ from .forms import SignUpForm, LoginForm
 class IndexView(TemplateView):
     template_name = "accounts/index.html"
 
-    def get_template_names(self):
+    def get(self, request):
         if self.request.user.is_authenticated:
-            template_name = "app/home.html"
+            return redirect("app:home")
         else:
-            template_name = self.template_name
-
-        return [template_name]
+            return render(request, self.template_name)
 
 
 class SignupView(CreateView):

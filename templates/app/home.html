@@ -12,14 +12,17 @@
                 <div class="col-md-12">
                     検索履歴から選ぶ
                 </div>
-                <div class="col-md-2">
-                    <form>
-                        <a href=""></a>
+                {% for keyword in keywords %}
+                    <div class="col-md-2">
+                        <form>
+                            <a href="{% url "app:image_search" keyword.name %}">{{keyword.name}}</a>
+                            <button type="submit" class="btn btn-danger rounded-circle p-0" style="width: 12px;height: 12px;font-size: 7px">✕</button>
+                        </form>
+                    </div>
+                    {% empty %}
+                    <p class="m-auto">検索履歴がありません</p>
+                {% endfor %}
 
-                        <button type="submit" class="btn btn-danger rounded-circle p-0" style="width: 12px;height: 12px;font-size: 7px">✕</button>
-                    </form>
-                </div>
-                <p class="m-auto">検索履歴がありません</p>
             </div>
 
             <div class="row row-gap-2">
@@ -27,10 +30,19 @@
                     画像からキーワードを選ぶ
                 </div>
                 <form action="{% url "app:image" %}" method="GET">
-                    <input type="file" accept="image/*" id="image" style="width: fit-content">
-                    <input type="hidden" name="token" value="{{ token }}">
+                    <input type="hidden" name="token1" value="{{ token1 }}">
                     <button type="submit" id="test1">ファイルを選択</button>
                 </form>
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags %}
+                            <div class="alert alert-danger alert-dismissible" role="alert">
+                                {{message}}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
             </div>
 
             <div class="row justify-content-evenly">
@@ -44,12 +56,13 @@
                     <ul class="list-group">
                         {% if names != "no" %}
                             {% for name in names %}
-                                <a href="{% url "app:images_list" %}" class="list-group-item list-group-item-action list-group-item-warning">{{ name }}</a>
+                                <a href="{% url "app:image_search" name %}" class="list-group-item list-group-item-action list-group-item-warning">{{ name }}</a>
                             {% endfor %}
                         {% else %}
-                            <script>
-                                alert("画像に写っている対象が検出できませんでした。画像の変更をお願いします。")
-                            </script>
+                            <div class="alert alert-danger alert-dismissible" role="alert">
+                                画像に写っている対象が検出できませんでした。画像の変更をお願いします。
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
                         {% endif %}
                     </ul>
                 </div>
