@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% load django_bootstrap5 %}
+{% load static %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row justify-content-center row-gap-4">
+
+            <div class="row align-items-center">
+                <div class="col-md-7">
+                    探す対象：{{ search_word }}<br/>
+                    探すフォルダ：<button type="button" class="f_button" id="button1" name="button1">フォルダを選択</button>
+                    <label for="button1" id="folder_name"></label>
+                </div>
+                <div id="spinner" class="col-md-3 text-center" style="display: none">
+                    画像を探しています
+                    <div class="spinner-border spinner-border-sm text-success" role="status"></div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center row-gap-5">
+                <div id="img_list" class="row justify-content-evenly align-items-start row-gap-4"></div>
+            </div>
+
+            <div class="row row-gap-2">
+                <div id="img_move" style="display: none">
+                    チェックを入れた画像を移動：
+                    <button type="button" class="f_button" id="button2" name="button2">移動先のフォルダを選択</button>
+                </div>
+                <div id="move_text"></div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
+{% block extrajs %}
+
+    <script></script>
+{% endblock %}

@@ -1,13 +1,22 @@
-from django.shortcuts import render, redirect
-from django.views.generic import TemplateView, View, ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib import messages
-from django.urls import reverse_lazy, reverse
-from ultralytics import YOLO
+import base64
+import glob
+import json
+import os
+import pathlib
+import shutil
 import tkinter as tk
+import uuid
 from tkinter import filedialog
-from PIL import Image, UnidentifiedImageError
-import base64, mimetypes, uuid, glob, os
+
+import requests
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import redirect, render
+from django.urls import reverse, reverse_lazy
+from django.views.generic import ListView, TemplateView, View
+from ultralytics import YOLO
+
 from .models import Keyword
 
 
@@ -25,192 +34,181 @@ class Home(LoginRequiredMixin, TemplateView):
 class Image(Home):
     template_name = "app/home.html"
 
+    def post(self, request):
+        self.request.session["token"] = "token"
+        return redirect("app:image")
+
     def get(self, request, **kwargs):
-        # 更新時にファイルダイアログが開かないようにトークンで判定
-        request_token1 = self.request.GET.get("token1")
-        session_token1 = self.request.session.pop("token1", "")
-        if request_token1 == session_token1:
+        if "token" in self.request.session:
+            del self.request.session["token"]
+
             file_name = Dialog.dialog(self, 0)
 
             if file_name != "":
                 try:
                     yolo_result = YoloPredict.yolo_predict(self, file_name)
 
-                    token1 = str(uuid.uuid4())
-                    self.request.session["token1"] = token1
-                    submit_token1 = self.request.session["token1"]
-
-                    context = super().get_context_data(**kwargs)
-                    return render(
-                        request,
-                        "app/home.html",
-                        context={
-                            "file_name": yolo_result[0],  # img_file,
-                            "names": yolo_result[1],  # class_name,
-                            "token1": submit_token1,
-                            "keywords": context["keywords"],
-                        },
-                    )
-                except UnidentifiedImageError:
+                except Exception:
                     messages.error(
                         request, "選択されたファイルを開くことができません。"
                     )
                     return redirect("app:home")
 
-            else:
-                return redirect("app:home")
+                else:
+                    context = super().get_context_data(**kwargs)
+                    return render(
+                        request,
+                        "app/home.html",
+                        context={
+                            "file_url": yolo_result[0],  # img_file
+                            "names": yolo_result[1],  # class_name
+                            "keywords": context["keywords"],
+                            "file_name": file_name,
+                        },
+                    )
 
-        else:
-            return redirect("app:home")
+        return redirect("app:home")
 
 
-class ImageSearch(LoginRequiredMixin, TemplateView):
-    template_name = "app/image_search.html"
+class Search(LoginRequiredMixin, TemplateView):
+    template_name = "app/search.html"
 
-    def get_context_data(self, **kwargs):
-
+    def get(self, request):
         sec_fetch_site = self.request.META["HTTP_SEC_FETCH_SITE"]
         if sec_fetch_site == "same-origin":
-            context = super().get_context_data(**kwargs)
-
             user_id = self.request.user.id
-            search_word = kwargs["search_word"]
+            search_word = self.request.GET.get("search_word")
 
             word_exists = Keyword.objects.filter(
                 user_id=user_id, name__contains=search_word
             ).exists()
+
             if not word_exists:
                 Keyword.objects.create(name=search_word, user_id=user_id)
 
-            context["search_word"] = search_word
-
-            return context
+            return render(
+                request, "app/search.html", context={"search_word": search_word}
+            )
 
         else:
             return redirect("app:home")
 
+    def post(self, request):
+        j_request = json.loads(self.request.body)
+        folder = Dialog.dialog(self, 1)
 
-class FolderChoice(ImageSearch):
-    template_name = "app/image_search.html"
+        if folder != "no":
+            if "param" in j_request:  # search_wordにあてはまる画像をフォルダ内から探す
+                search_word = j_request["param"]
 
-    def get(self, request, **kwargs):
-        request_token2 = self.request.GET.get("token2")
-        session_token2 = self.request.session.pop("token2", "")
-        context = super().get_context_data(**kwargs)
-        search_word = context["search_word"]
-
-        if request_token2 == session_token2:
-            files = Dialog.dialog(self, 1)
-
-            if files != "no":
                 try:
-                    yolo_result = YoloPredict.yolo_predict(self, files, search_word)
-                    res_len = len(yolo_result)
-                    # for i in range(res_len):
+                    yolo_result = YoloPredict.yolo_predict(self, folder, search_word)
                     # l = [d["url"] for d in yolo_result]
 
-                except UnidentifiedImageError:
-                    pass
+                except FileNotFoundError:
+                    return JsonResponse({"folder": folder, "img_files": "no_files"})
 
                 else:
-                    token2 = str(uuid.uuid4())
-                    self.request.session["token2"] = token2
-                    submit_token2 = self.request.session["token2"]
-
-                    return render(
-                        request,
-                        "app/image_search.html",
-                        context={
-                            "search_word": search_word,
+                    return JsonResponse(
+                        {
+                            "folder": folder,
                             "img_files": yolo_result,
-                            "token2": submit_token2,
-                            "img_num": res_len,
-                        },
+                        }
                     )
 
-            return redirect("app:image_search", search_word)
+            else:  # チェックがある画像を選択したフォルダに移動させる
+                values = [d.get("check") for d in j_request]
+                move_file = []
+                for value in values:
+                    p = value.replace(os.sep, "/")
+                    dirname = os.path.dirname(p)
+                    if dirname != folder:
+                        shutil.move(value, folder)
+                        move_file.append("ok")
+                    else:
+                        move_file.append("exists")
 
-        return redirect("app:image_search", search_word)
+                return JsonResponse(
+                    {"folder": folder, "move_file": move_file}, safe=False
+                )
+
+        else:
+            return JsonResponse({"folder": "no"})
 
 
 class Dialog:
-    def dialog(self, c_num):
+    def dialog(self, num):
         root = tk.Tk()
         root.attributes("-topmost", True)
         root.withdraw()
 
-        if c_num == 0:
-            file_name = filedialog.askopenfilename(
+        if num == 0:
+            f_name = filedialog.askopenfilename(
                 title="ファイルを開く",
                 filetypes=[
-                    ("画像ファイル", ".png .jpg"),
-                    ("PNG", ".png"),
+                    ("画像ファイル", ".jpg"),
                     ("JPEG", ".jpg"),
                 ],
             )
-        elif c_num == 1:
+        elif num == 1:
             folder_name = filedialog.askdirectory(
                 title="フォルダを開く", mustexist=True
             )
             if folder_name != "":
-                file_name = glob.glob(
-                    os.path.join(folder_name, "**/*." + (("jpg") or ("png"))),
-                    recursive=True,
-                )
+                f_name = folder_name
             else:
-                file_name = "no"
+                f_name = "no"
 
         root.destroy()
-        return file_name
+        return f_name
 
 
 class YoloPredict:
-    def yolo_predict(self, file_name, *args):
-        model = YOLO("yolov8m.pt")
-        if not args:
-            results = model.predict(file_name, conf=0.5)
+    def yolo_predict(self, f_name, *args):
+        model = YOLO("yolov8l.pt")
+        if not args:  # Imageからの処理（1枚の画像の物体検出）
+            results = model.predict(source=f_name, conf=0.5)
             result = results[0]
-
             item = len(result.boxes)
             if item != 0:
                 class_ids = result.boxes.cls
                 name_dict = result.names
-
                 class_name = []
                 for class_id in class_ids:
                     class_name.append(name_dict[int(class_id)])
+
             else:
                 class_name = "no"
 
-            with open(file_name, "rb") as f:
-                b64_img = base64.b64encode(f.read())
-
-            str_img = str(b64_img)
-            img = str_img[2 : len(str_img) - 1]
-            mimetype = mimetypes.guess_type(file_name)[0]
-            img_file = f"data:{mimetype};base64,{img}"
-
+            img_file = YoloPredict.url_b64(self, f_name)
             return img_file, class_name
 
-        else:
+        else:  # Searchからの処理（clsにあてはまる画像を探す）
             classes = model.names
-            c = [key for key, value in classes.items() if value == args[0]]
-            results = model.predict(file_name, conf=0.5, classes=c)
+            cls = [key for key, value in classes.items() if value == args[0]]
+
+            results = model.predict(
+                source=f"{f_name}/**/*.jpg",
+                stream=True,
+                # imgsz=1088,
+                conf=0.5,
+                classes=cls,
+            )
 
             d = []
-            results_len = len(file_name)
-            for i in range(results_len):
-                result = results[i]
+            for result in results:
                 if result:
-                    with open(result.path, "rb") as f:
-                        b64_img = base64.b64encode(f.read())
+                    img_file = YoloPredict.url_b64(self, result.path)
+                    d.append({"url": img_file, "file_path": result.path})
 
-                    str_img = str(b64_img)
-                    img = str_img[2 : len(str_img) - 1]
-                    mimetype = mimetypes.guess_type(result.path)[0]
-                    img_file = f"data:{mimetype};base64,{img}"
+            return d
 
-                    # d.append({"url": "aaa", "res": result.path})
-                    d.append(img_file)
+    def url_b64(self, file):
+        with open(file, "rb") as f:
+            b64_img = base64.b64encode(f.read())
 
-            return d  # img_file, class_name
+        str_img = str(b64_img)
+        img = str_img[2 : len(str_img) - 1]
+        img_file = f"data:image/jpeg;base64,{img}"
+
+        return img_file

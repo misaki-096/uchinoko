@@ -5,58 +5,56 @@
 
 {% block content %}
 
-    <div class="container">
-        <div class="row row-gap-3">
+    <div class="row row-gap-3">
 
-            <div class="row row-gap-2">
-                <div class="col-md-12">
-                    検索履歴から選ぶ
+        <div class="row row-gap-2">
+            <div class="col-md-12">
+                検索履歴から選ぶ
+            </div>
+            {% for keyword in keywords %}
+                <div class="col-md-2">
+                    <form>
+                        <a href="{% url "app:search" %}?search_word={{ keyword.name }}">{{ keyword.name }}</a>
+                        <button type="submit" class="btn btn-danger rounded-circle p-0" style="width: 12px;height: 12px;font-size: 7px">✕</button>
+                    </form>
                 </div>
-                {% for keyword in keywords %}
-                    <div class="col-md-2">
-                        <form>
-                            <a href="{% url "app:image_search" keyword.name %}">{{keyword.name}}</a>
-                            <button type="submit" class="btn btn-danger rounded-circle p-0" style="width: 12px;height: 12px;font-size: 7px">✕</button>
-                        </form>
-                    </div>
-                    {% empty %}
-                    <p class="m-auto">検索履歴がありません</p>
+                {% empty %}
+                <p class="m-auto">検索履歴がありません</p>
+            {% endfor %}
+
+        </div>
+
+        <div class="row row-gap-2">
+            <div class="col-md-12">
+                画像からキーワードを選ぶ
+            </div>
+            <form action="{% url "app:image" %}" method="POST">
+                {% csrf_token %}
+                <button type="submit">ファイルを選択</button>
+                {{ file_name }}
+            </form>
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags %}
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endif %}
                 {% endfor %}
+            {% endif %}
+        </div>
 
-            </div>
-
-            <div class="row row-gap-2">
-                <div class="col-md-12">
-                    画像からキーワードを選ぶ
-                </div>
-                <form action="{% url "app:image" %}" method="GET">
-                    <input type="hidden" name="token1" value="{{ token1 }}">
-                    <button type="submit" id="test1">ファイルを選択</button>
-                </form>
-                {% if messages %}
-                    {% for message in messages %}
-                        {% if message.tags %}
-                            <div class="alert alert-danger alert-dismissible" role="alert">
-                                {{message}}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-            </div>
-
-            <div class="row justify-content-evenly">
-                <div class="col-md-6">
-                    <img src="{{ file_name }}" class="img-thumbnail border-0" width="80%" height="auto">
-                    <script>
-                        let data = "{{file_name}}";
-                    </script>
+        <div class="row justify-content-evenly">
+            {% if file_url %}
+                <div class="col-md-6 text-center">
+                    <img src="{{ file_url }}" class="img-thumbnail" width="80%" height="auto">
                 </div>
                 <div class="col-md-4">
                     <ul class="list-group">
                         {% if names != "no" %}
                             {% for name in names %}
-                                <a href="{% url "app:image_search" name %}" class="list-group-item list-group-item-action list-group-item-warning">{{ name }}</a>
+                                <a href="{% url "app:search" %}?search_word={{ name }}" class="list-group-item list-group-item-action list-group-item-warning">{{ name }}</a>
                             {% endfor %}
                         {% else %}
                             <div class="alert alert-danger alert-dismissible" role="alert">
@@ -66,9 +64,9 @@
                         {% endif %}
                     </ul>
                 </div>
-            </div>
-
+            {% endif %}
         </div>
+
     </div>
 
 {% endblock %}

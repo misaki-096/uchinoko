@@ -1,20 +1,22 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
-from django.views.generic import TemplateView, CreateView
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView, LogoutView
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-from .forms import SignUpForm, LoginForm
+from django.views.generic import CreateView, TemplateView
+
+from .forms import LoginForm, SignUpForm
 
 
 class IndexView(TemplateView):
     template_name = "accounts/index.html"
 
     def get(self, request):
+        # ログイン状態を判定
         if self.request.user.is_authenticated:
-            return redirect("app:home")
+            return redirect("app:home")  # ログインしている
         else:
-            return render(request, self.template_name)
+            return render(request, self.template_name)  # ログインしていない
 
 
 class SignupView(CreateView):

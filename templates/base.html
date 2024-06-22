@@ -30,7 +30,10 @@
                             </li>
                             <li class="nav-item">
                                 {% if user.is_authenticated %}
-                                    <a href="{% url "accounts:logout" %}" class="nav-link active">ログアウト</a>
+                                    <form action="{% url "accounts:logout" %}" method="POST">
+                                        {% csrf_token %}
+                                        <button type="submit" class="nav-link active">ログアウト</button>
+                                    </form>
                                 {% endif %}
                             </li>
                         </ul>
@@ -45,7 +48,10 @@
             </main>
         </div>
         <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/alfrcr/paginathing/dist/paginathing.min.js"></script>
         <script src="{% static "js/app.js" %}"></script>
+
+        {% block extrajs %}{% endblock %}
 
     </body>
 
