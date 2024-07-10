@@ -1,0 +1,50 @@
+{% load django_bootstrap5 %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-5 m-auto">
+
+            <div class="card">
+
+                <div class="card-header text-center">
+                    <b>{{ card_header }}</b>
+                </div>
+
+                <form class="card-body" method="POST">
+                    {% csrf_token %}
+
+                    {% url "accounts:password_reset" as password_reset %}
+                    {% if request.path != password_reset %}
+
+                    {% bootstrap_form form %}
+
+                    {% else %}
+
+                    <p class="card-text">登録してあるメールアドレスを入力して送信ボタンを押してください。</p>
+                    {% bootstrap_form form %}
+
+                    {% if messages %}
+                    {% for message in messages %}
+                    <p class="card-text text-danger">{{ message }}</p>
+                    {% endfor %}
+                    {% endif %}
+
+                    {% endif %}
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">{{ btn_text }}</button>
+                    </div>
+                </form>
+
+                {% url "accounts:login" as login %}
+                {% if request.path == login %}
+                <div class="card-footer text-center">
+                    <a href="{% url "accounts:password_reset" %}">パスワードをお忘れの方はこちら</a>
+                </div>
+                {% endif %}
+
+            </div>
+
+        </div>
+    </div>
+</div>

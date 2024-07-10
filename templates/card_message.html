@@ -1,0 +1,37 @@
+{% load django_bootstrap5 %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-5 m-auto">
+
+            <div class="card">
+
+                {% url "accounts:delete" user.pk as delete %}
+                {% if request.path != delete %}
+
+                <div class="card-body text-center">
+                    {{ card_text }}
+
+                    {% url "accounts:password_reset_complete" as reset_complete %}
+                    {% if request.path == reset_complete %}
+                    <a href="{% url "accounts:login" %}">ログイン</a>
+                    {% endif %}
+                </div>
+
+                {% else %}
+
+                <form class="card-body text-center" method="POST">
+                    {% csrf_token %}
+
+                    アカウントを削除しますか？
+                    <button type="submit" class="btn btn-danger">削除</button>
+                    <a class="btn btn-link" onclick="history.back(); return false">キャンセル</a>
+                </form>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+    </div>
+</div>

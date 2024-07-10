@@ -1,8 +1,6 @@
 import base64
-import glob
 import json
 import os
-import pathlib
 import shutil
 import tkinter as tk
 from tkinter import filedialog
@@ -11,9 +9,10 @@ import cv2
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
-from django.urls import reverse, reverse_lazy
-from django.views.generic import DeleteView, TemplateView, View
+from django.urls import reverse_lazy
+from django.views.generic import DeleteView, TemplateView
 from ultralytics import YOLO
+from ultralytics.utils.plotting import Colors
 
 from .models import Keyword
 
@@ -29,7 +28,7 @@ class Home(LoginRequiredMixin, TemplateView):
         return context
 
 
-class Image(Home):
+class ImageFile(Home):
     def get(self, request):
         file_name = Dialog.dialog(self, 0)
 
@@ -38,18 +37,23 @@ class Image(Home):
                 yolo_result = YoloPredict.yolo_predict(self, file_name)
 
             except cv2.error:
-                return JsonResponse({"file": "error"})
+                return JsonResponse(
+                    {
+                        "file": file_name,
+                        "error": "error",
+                    }
+                )
 
             else:
                 return JsonResponse(
                     {
+                        "file": file_name,
                         "file_url": yolo_result[0],  # img_file
                         "names": yolo_result[1],  # class_name
-                        "file": file_name,
                     }
                 )
 
-        return JsonResponse({"file": "no"})
+        return JsonResponse({"file": ""})
 
 
 class Search(LoginRequiredMixin, TemplateView):
@@ -115,7 +119,7 @@ class Search(LoginRequiredMixin, TemplateView):
                 return JsonResponse({"folder": folder, "move_files": move_files})
 
         else:
-            return JsonResponse({"folder": "no"})
+            return JsonResponse({"folder": ""})
 
 
 class Dialog:
@@ -141,21 +145,33 @@ class Dialog:
 
 class YoloPredict:
     def yolo_predict(self, file_name):
-        model = YOLO("yolov8n.pt")
+        model = YOLO("yolov8l.pt")
 
         # Imageからの処理（1枚の画像の物体検出）
-        results = model.predict(source=file_name, conf=0.5)
+        results = model.predict(source=file_name, conf=0.3)
         result = results[0]
         item = len(result.boxes)
         if item != 0:
             class_ids = result.boxes.cls
             name_dict = result.names
-            boxes = result.boxes.xywh
+            boxes_xy = result.boxes.xyxy
+            boxes_wh = result.boxes.xywh
 
             class_name = []
-            for class_id, box in zip(class_ids, boxes):
+            for class_id, box_xy, box_wh in zip(class_ids, boxes_xy, boxes_wh):
+                c = Colors()
+                color = c(class_id)
                 class_name.append(
-                    {"name": name_dict[int(class_id)], "box": [int(i) for i in box]}
+                    {
+                        "name": name_dict[int(class_id)],
+                        "box": [
+                            int(i) for i in box_xy[:2]
+                        ]  # バウンディングボックスの「左上の位置」を取得
+                        + [
+                            int(i) for i in box_wh[2:]
+                        ],  # バウンディングボックスの「縦横の長さ」を取得
+                        "color": color,
+                    }
                 )
 
         else:
@@ -191,7 +207,12 @@ class YoloPredict:
                 raise e  # ファイルが無い場合はエラーを送る
 
             except cv2.error:
-                pass  # ファイルはあるが破損などで開かない場合は何もしない
+                # ファイルはあるが破損などで開かない場合はメッセージを送る
+                d.append(
+                    {
+                        "error": "処理の途中でエラーが発生しました。開くことが出来ないファイルがあります。",
+                    }
+                )
 
             except StopIteration:
                 break

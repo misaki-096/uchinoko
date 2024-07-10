@@ -8,7 +8,7 @@ app_name = "app"
 
 urlpatterns = [
     path("", views.Home.as_view(), name="home"),
-    path("image/", views.Image.as_view(), name="image"),
+    path("image/", views.ImageFile.as_view(), name="image"),
     path("search/", views.Search.as_view(), name="search"),
     path("delete/<int:pk>", views.WordDelete.as_view(), name="delete"),
 ] + static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)

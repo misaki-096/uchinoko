@@ -1,14 +1,22 @@
 {% extends "base.html" %}
 
 {% load django_bootstrap5 %}
+{% load static %}
 
 {% block content %}
 
+<div class="top_image">
+
     <div class="card text-center m-auto w-50">
+
+        <img src="{% static "images/20240707.jpg" %}" alt="" class="card-img-top">
+
         <div class="card-body">
             <a href="{% url "accounts:login" %}" class="card-link">ログイン</a>
             <a href="{% url "accounts:sign_up" %}" class="card-link">新規登録</a>
         </div>
+
     </div>
+</div>
 
 {% endblock %}
