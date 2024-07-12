@@ -10,7 +10,6 @@ from django.contrib.auth.views import (
     PasswordResetView,
 )
 from django.db.models.base import Model as Model
-from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, TemplateView

@@ -7,7 +7,7 @@ from tkinter import filedialog
 
 import cv2
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView, TemplateView
@@ -199,28 +199,22 @@ class YoloPredict:
         )
 
         d = []
-        while True:
-            try:
-                result = next(results)
-
-            except FileNotFoundError as e:
-                raise e  # ファイルが無い場合はエラーを送る
-
-            except cv2.error:
-                # ファイルはあるが破損などで開かない場合はメッセージを送る
-                d.append(
-                    {
-                        "error": "処理の途中でエラーが発生しました。開くことが出来ないファイルがあります。",
-                    }
-                )
-
-            except StopIteration:
-                break
-
-            else:
+        try:
+            for result in results:
                 if result:
                     img_file = YoloPredict.url_b64(self, result.path)
                     d.append({"url": img_file, "file_path": result.path})
+
+        except FileNotFoundError as e:
+            raise e  # ファイルが無い場合はエラーを送る
+
+        except cv2.error:
+            # ファイルはあるが破損などで開かない場合はメッセージを送る
+            d.append(
+                {
+                    "error": "処理の途中でエラーが発生しました。開くことが出来ないファイルがあります。",
+                }
+            )
 
         return d
 

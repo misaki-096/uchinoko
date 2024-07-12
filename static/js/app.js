@@ -65,7 +65,7 @@ image.on('click', async function() {
                             ctx.font = `${font_size} sans-serif`;
                             ctx.fillText(
                                 value.name,
-                                value.box[0],
+                                value.box[0] + 5,
                                 value.box[1]
                             );
                         }
@@ -263,6 +263,7 @@ function pagination() {
         perPage: 8,
         firstText: '最初',
         lastText: '最後',
-        ulClass: 'pagination justify-content-center m-auto'
+        containerClass: 'pagination-container mt-4 mb-2',
+        ulClass: 'pagination justify-content-center m-0'
     });
 }

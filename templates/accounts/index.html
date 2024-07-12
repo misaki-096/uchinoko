@@ -5,15 +5,90 @@
 
 {% block content %}
 
-<div class="top_image">
+<div class="container-fluid top_image">
+    <div class="row">
 
-    <div class="card text-center m-auto w-50">
+        <div class="col-md-3 m-auto text-center">
+            <div class="card">
 
-        <img src="{% static "images/20240707.jpg" %}" alt="" class="card-img-top">
+                <img src="{% static "images/logo_illust.jpg" %}" class="card-img-top">
 
-        <div class="card-body">
-            <a href="{% url "accounts:login" %}" class="card-link">ログイン</a>
-            <a href="{% url "accounts:sign_up" %}" class="card-link">新規登録</a>
+                <div class="card-body">
+                    <a href="{% url "accounts:login" %}" class="card-link">ログイン</a>
+                    <a href="{% url "accounts:sign_up" %}" class="card-link">新規登録</a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<h1 class="text-center m-3">ペットの画像を自動で検索！シンプルな画像管理アプリ「<b>うちの仔</b>」</h1>
+
+<div class="container shadow py-2 toppage_container">
+    <div class="row row-gap-3 justify-content-center">
+
+        <div class="col-md-12">
+            <h2>「うちの仔」って何？</h2>
+            <p>
+                「犬」や「猫」といった探したい対象を選んで、どこのフォルダから探すかを選ぶと自動で検索してくれるアプリです。<br>
+                一覧で表示されるので、そのまま移動させたいフォルダと画像を選べば簡単に整理することができます。
+            </p>
+        </div>
+
+        <div class="col-md-12">
+            <div class="row row-gap-2 justify-content-evenly align-items-center">
+
+                <div class="col-md-6">
+                    <img src="{% static "images/sample1.png" %}" class="img-thumbnail">
+                </div>
+
+                <div class="col-md-auto">
+                    <div class="card">
+                        <div class="card-header">
+                            検索できる動物の一覧
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">鳥</li>
+                            <li class="list-group-item">猫</li>
+                            <li class="list-group-item">犬</li>
+                            <li class="list-group-item">馬</li>
+                            <li class="list-group-item">羊</li>
+                            <li class="list-group-item">牛</li>
+                            <li class="list-group-item">象</li>
+                            <li class="list-group-item">熊</li>
+                            <li class="list-group-item">シマウマ</li>
+                            <li class="list-group-item">キリン</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="row">
+
+                <div class="col-md-auto">
+                    <h3>こんな方におすすめ！</h3>
+                    <ul>
+                        <li>小さいときの姿と見比べたいのに画像が多すぎて見つからない</li>
+                        <li>ペットだけのフォルダを作って癒されたい</li>
+                        <li>スマホのアルバムアプリだとアプリ内でしかフォルダが作れない</li>
+                        <li>画像をまとめようと移動させたら日付が変わって並び順がぐちゃぐちゃになった</li>
+                        <li>タグ付けとかで整理しようとしても多すぎて面倒・・・</li>
+                        <li>操作が簡単なものがいい</li>
+                        <li>大量の画像の中からせめてペットの画像だけでも自動で探してほしい</li>
+                        <li>とりあえずこの仔の画像だけでもありとあらゆる方法でバックアップを取りたい</li>
+                    </ul>
+                </div>
+
+                <div class="col-md-6">
+                    <img src="{% static "images/sample2.png" %}" class="img-thumbnail">
+                </div>
+
+            </div>
         </div>
 
     </div>

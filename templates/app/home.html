@@ -6,56 +6,61 @@
 {% block content %}
 
 <div class="container">
-
     <div class="row row-gap-4">
 
-        <div class="row row-gap-2">
-            <div class="col-md-12">検索履歴から選ぶ</div>
+        <div class="col-md-12">
+            検索履歴から選ぶ
+            <div class="row">
 
-            {% for search_word in search_words %}
-            <div class="col-md-auto">
-                <form action="{% url "app:delete" search_word.pk %}" method="POST"
-                    onsubmit="return confirm('キーワード「{{ search_word.name }}」を削除しますか？')">
-                    {% csrf_token %}
+                {% for search_word in search_words %}
+                <div class="col-md-auto">
+                    <form action="{% url "app:delete" search_word.pk %}" method="POST"
+                        onsubmit="return confirm('キーワード「{{ search_word.name }}」を削除しますか？')">
+                        {% csrf_token %}
 
-                    <a href="{% url "app:search" %}?search_word={{ search_word.name }}">{{ search_word.name }}</a>
+                        <a href="{% url "app:search" %}?search_word={{ search_word.name }}">{{ search_word.name }}</a>
 
-                    <button type="submit" class="btn btn-danger rounded-circle p-0"
-                        style="width: 12px; height: 12px; font-size: 7px">✕</button>
-                </form>
+                        <button type="submit" class="btn btn-danger rounded-circle p-0"
+                            style="width: 12px; height: 12px; font-size: 7px">✕</button>
+                    </form>
+                </div>
+
+                {% empty %}
+                <div class="col-md-auto">検索履歴がありません</div>
+                {% endfor %}
+
             </div>
-            {% empty %}
-            <div class="col-md-auto">検索履歴がありません</div>
-            {% endfor %}
-
         </div>
 
-        <div class="row row-gap-2">
-            <div class="col-md-12">画像からキーワードを選ぶ</div>
-            <div>
+        <div class="col-md-12">
+            画像からキーワードを選ぶ
+            <div class="mt-2">
                 <button type="button" id="image">ファイルを選択</button>
                 <label for="image" id="file_name"></label>
             </div>
         </div>
 
-        <div class="row justify-content-evenly">
-            <div class="col-md-6 text-center">
-                <div id="spinner1" class="col-md-auto" style="display: none">
-                    <div class="spinner-border text-success" role="status"></div>
+        <div class="col-md-12">
+            <div class="row justify-content-evenly">
+
+                <div class="col-md-6 text-center">
+                    <div id="spinner1" class="col-md-auto" style="display: none">
+                        <div class="spinner-border text-success" role="status"></div>
+                    </div>
+
+                    <canvas id="preview" style="width: 80%; height: auto;">
+                        <img src="" id="img" width="80%" height="auto">
+                    </canvas>
                 </div>
 
-                <canvas id="preview" style="width: 80%; height: auto;">
-                    <img src="" id="img" width="80%" height="auto">
-                </canvas>
-            </div>
+                <div class="col-md-4">
+                    <ul class="list-group"></ul>
+                </div>
 
-            <div class="col-md-4">
-                <ul class="list-group"></ul>
             </div>
         </div>
 
     </div>
-
 </div>
 
 {% endblock %}

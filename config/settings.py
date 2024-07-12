@@ -54,8 +54,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-SESSION_ENGIN = "django.contrib.session.backends.cache"
-
 ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
@@ -131,3 +129,6 @@ AUTH_USER_MODEL = "accounts.User"
 LOGIN_URL = "accounts:index"
 LOGIN_REDIRECT_URL = "app:home"
 LOGOUT_REDIRECT_URL = "accounts:login"
+
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_AGE = 21600

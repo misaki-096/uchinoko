@@ -1,0 +1,20 @@
+.top_image {
+	background-image: url("/static/images/cat.jpg"), url("/static/images/dog.JPG");
+	background-repeat: no-repeat, no-repeat;
+	background-size: 50%, 50%;
+	background-position: -10%, 120% 10%;
+}
+.top_image > .row {
+	background-color: rgba(255, 255, 255, 0.3);
+}
+
+.toppage_container {
+	background-color: lavender;
+}
+
+h1 b,
+h2,
+h3 {
+	text-decoration: underline solid orange;
+	text-underline-offset: 5px;
+}

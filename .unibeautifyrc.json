@@ -1,0 +1,22 @@
+{
+	"Python": {
+		"beautifiers": ["Black", "YAPF"],
+		"indent_size": 4,
+		"indent_style": "space"
+	},
+	"HTML": {
+		"beautifiers": ["JS-Beautify"],
+		"indent_size": 4,
+		"indent_style": "space",
+		"indent_inner_html": true,
+		"wrap_line_length": 120
+	},
+	"JavaScript": {
+		"beautifiers": ["Prettier", "JS-Beautify"],
+		"quotes": "single",
+		"indent_size": 4,
+		"end_with_semicolon": true,
+		"end_with_comma": false,
+		"preserve_newlines": true
+	}
+}
