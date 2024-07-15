@@ -17,4 +17,4 @@ PythonのフレームワークのDjangoを主に使用して作りました。
 - paginathing.js
 
 ## ライセンス
-[AGPL-3.0 License]
+[AGPL-3.0 License](LICENSE)
