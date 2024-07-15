@@ -7,7 +7,9 @@ PythonのフレームワークのDjangoを主に使用して作りました。
 
 検出された画像ファイルは画面に表示され、好きなフォルダに移動させることができます。
 
-![サンプル画像](https://github.com/user-attachments/assets/d3f422a4-d87b-42aa-b000-9d24ce21441d)
+| 最初の画面 | ホーム画面 |
+| --------------- | ------- |
+| ![サンプル画像](https://github.com/user-attachments/assets/d3f422a4-d87b-42aa-b000-9d24ce21441d) |
 
 ## 使用技術
 - Python 3.12.4
