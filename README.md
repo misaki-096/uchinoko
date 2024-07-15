@@ -7,7 +7,9 @@ PythonのフレームワークのDjangoを主に使用して作りました。
 
 検出された画像ファイルは画面に表示され、好きなフォルダに移動させることができます。
 
-## 使用した技術
+![サンプル画像]("C:/Users/misak/Pictures/Screenshots/スクリーンショット (27).png")
+
+## 使用技術
 - Python 3.12.4
 - Django 5.0.6
 - ultralytics 8.2.27
