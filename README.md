@@ -1,7 +1,7 @@
 # うちの仔
 
 ## 概要
-LaravelとGoogle Cloud Vision APIを使用して作成したwebアプリを、PythonのフレームワークのDjangoを使用して作り直しました。
+LaravelとGoogle Cloud Vision APIを使用して作成したwebアプリを、DjangoとYOLOv8を使用して作り直しました。
 
 学習済みデータセットモデルを使用して、指定したクラスがある画像ファイルの検出をローカルフォルダ内から行います。
 
